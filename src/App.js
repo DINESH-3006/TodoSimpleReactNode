@@ -1,25 +1,40 @@
-import logo from './logo.svg';
-import './App.css';
-
+import { useState, useEffect } from "react";
+function useTodoUpdate() {
+  const [Todo, setTodo] = useState([]);
+  useEffect(() => {
+    fetch("http://localhost:3001/todo", { method: "GET" }).then((response) => {
+      response.json().then((data) => {
+        console.log(data);
+        setTodo(data);
+      });
+    });
+    setInterval(() => {
+      fetch("http://localhost:3001/todo", { method: "GET" }).then(
+        (response) => {
+          response.json().then((data) => {
+            console.log(data);
+            setTodo(data);
+          });
+        }
+      );
+    }, 1000);
+  }, []);
+  return Todo;
+}
 function App() {
+  let Todo = useTodoUpdate();
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      {Todo.map((val) => {
+        return (
+          <div>
+            {val.todoId} {val.todoName} {val.todoDescription}
+            <button>Delete</button>
+            <br />
+          </div>
+        );
+      })}
     </div>
   );
 }
-
 export default App;
